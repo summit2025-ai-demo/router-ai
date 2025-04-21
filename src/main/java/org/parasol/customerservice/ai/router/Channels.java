@@ -1,8 +1,17 @@
 package org.parasol.customerservice.ai.router;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum Channels {
 
-    SUPPORT, FINANCE, WEBSITE, UNKNOWN;
+    @JsonProperty("support")
+    SUPPORT,
+    @JsonProperty("finance")
+    FINANCE,
+    @JsonProperty("website")
+    WEBSITE,
+    @JsonProperty("unknown")
+    UNKNOWN;
 
     @Override
     public String toString() {
