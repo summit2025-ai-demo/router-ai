@@ -2,7 +2,11 @@ package org.parasol.customerservice.ai.router;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+import io.quarkiverse.langchain4j.RegisterAiService;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@RegisterAiService()
+@ApplicationScoped
 public interface RouteSelector {
 
     @SystemMessage("""
@@ -15,7 +19,7 @@ public interface RouteSelector {
             """)
     @UserMessage("""
             Classify the following email message and determine the appropriate routing category (Support, Finance, Website, or Unknown).
-            {{it}}
+            {text}
             """)
     SelectedRoute selectRoute(String text);
 }
