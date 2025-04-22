@@ -1,5 +1,6 @@
 package org.parasol.customerservice.ai.router;
 
+import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -29,22 +30,22 @@ public class RouterEmitter {
     @Channel("website")
     Emitter<String> websiteEmitter;
 
-    public void emit(String payload, Channels channel) {
+    public void emit(String key, String payload, Channels channel) {
         Channels channelInternal = channel;
         if (channel == null) {
             LOGGER.warn("Channel is null. Sending to 'unknown' emitter");
             channelInternal = Channels.UNKNOWN;
         }
         switch (channelInternal) {
-            case SUPPORT -> supportEmitter.send(toMessage(payload));
-            case FINANCE -> financeEmitter.send(toMessage(payload));
-            case WEBSITE -> websiteEmitter.send(toMessage(payload));
-            case UNKNOWN -> unknownEmitter.send(toMessage(payload));
+            case SUPPORT -> supportEmitter.send(toMessage(key, payload));
+            case FINANCE -> financeEmitter.send(toMessage(key, payload));
+            case WEBSITE -> websiteEmitter.send(toMessage(key, payload));
+            case UNKNOWN -> unknownEmitter.send(toMessage(key, payload));
         }
     }
 
-    private Message<String> toMessage(String payload) {
-        return Message.of(payload);
+    private Message<String> toMessage(String key, String payload) {
+        return KafkaRecord.of(key, payload);
     }
 
 }

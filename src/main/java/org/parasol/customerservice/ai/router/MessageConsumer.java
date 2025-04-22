@@ -41,7 +41,7 @@ public class MessageConsumer {
                     SelectedRoute sr = messageProcessor.processMessage(content);
                     LOGGER.info("Selected Route: {}", sr.route.toString());
                     json.put("route", sr.route.toString());
-                    routerEmitter.emit(json.encode(), sr.route);
+                    routerEmitter.emit(m.key(), json.encode(), sr.route);
                 })
                 .onItem().transformToUni(m -> Uni.createFrom().voidItem())
                 .onFailure().recoverWithItem(t -> {
@@ -50,15 +50,15 @@ public class MessageConsumer {
                     PrintWriter pw = new PrintWriter(sw);
                     t.printStackTrace(pw);
                     if (t instanceof DecodeException) {
-                        handleError(new JsonObject(), t.getMessage(), sw.toString(), message.value());
+                        handleError(message.key(), new JsonObject(), t.getMessage(), sw.toString(), message.value());
                     } else {
-                        handleError(new JsonObject(message.value()), t.getMessage(), sw.toString(), null);
+                        handleError(message.key(), new JsonObject(message.value()), t.getMessage(), sw.toString(), null);
                     }
                     return null;
                 });
     }
 
-    private void handleError(JsonObject json, String errorMessage, String stacktrace, String message) {
+    private void handleError(String key, JsonObject json, String errorMessage, String stacktrace, String message) {
         LOGGER.error("Error while processing message: {}", errorMessage);
         JsonObject error = new JsonObject();
         error.put("source", "router");
@@ -71,10 +71,10 @@ public class MessageConsumer {
             }
             errors.add(error);
             json.put("errors", errors);
-            errorEventEmitter.emit(json.encode());
+            errorEventEmitter.emit(key, json.encode());
         } else {
             error.put("message", message);
-            errorEventEmitter.emit(error.encode());
+            errorEventEmitter.emit(key, error.encode());
         }
     }
 
