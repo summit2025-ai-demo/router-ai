@@ -13,7 +13,15 @@ public class MessageProcessor {
     @Inject
     RouteSelector routeSelector;
 
-    public SelectedRoute processMessage(String contents) {
+    public SelectedRoute processMessage(String contents, String context) {
+        if (context != null && !context.isEmpty()) {
+            String contextPrompt = """
+                    
+                    Additional context:
+                    %s
+                    """.formatted(context);
+            contents = contents + contextPrompt;
+        }
         return routeSelector.selectRoute(contents);
     }
 

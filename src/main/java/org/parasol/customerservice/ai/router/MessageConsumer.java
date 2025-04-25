@@ -38,7 +38,8 @@ public class MessageConsumer {
                 .onItem().invoke(m -> {
                     JsonObject json = new JsonObject(m.value());
                     String content = json.getString("content");
-                    SelectedRoute sr = messageProcessor.processMessage(content);
+                    String reason = json.getJsonObject("structured").getString("reason");
+                    SelectedRoute sr = messageProcessor.processMessage(content, reason);
                     LOGGER.info("Selected Route: {}", sr.route.toString());
                     json.put("route", sr.route.toString());
                     routerEmitter.emit(m.key(), json.encode(), sr.route);
