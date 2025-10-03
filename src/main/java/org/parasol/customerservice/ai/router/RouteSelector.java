@@ -3,10 +3,10 @@ package org.parasol.customerservice.ai.router;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Singleton;
 
 @RegisterAiService()
-@ApplicationScoped
+@Singleton
 public interface RouteSelector {
 
     @SystemMessage("""
